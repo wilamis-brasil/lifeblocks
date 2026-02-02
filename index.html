@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <meta name="color-scheme" content="light" />
+    <title>LifeBlocks — Foco & Rotina</title>
+    <link rel="icon" href="favicon.svg" type="image/svg+xml" />
+    <link rel="manifest" href="manifest.webmanifest" />
+    <link rel="stylesheet" href="styles.css?v=11" />
+    <meta name="theme-color" content="#ffffff" />
+    <meta name="application-name" content="LifeBlocks" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+  </head>
+  <body>
+    <div class="app" id="app">
+      <aside class="sidebar" id="sidebar">
+        <div class="brand">
+          <div class="brandTitle">
+            <img class="brandIcon" src="favicon.svg" alt="" aria-hidden="true" /> LifeBlocks
+          </div>
+          <div class="brandSub">Hábitos &amp; foco</div>
+        </div>
+        <nav class="nav">
+          <button class="navItem" type="button" data-route="dashboard">Minha rotina</button>
+          <button class="navItem" type="button" data-route="pomodoro">Pomodoro</button>
+          <button class="navItem" type="button" data-route="kanban">Kanban</button>
+        </nav>
+      </aside>
+      <main class="main" id="main">
+        <header class="topbar">
+          <div class="topbarLeft">
+            <button class="menuBtn" id="menuBtn" type="button" aria-label="Menu" aria-expanded="false">☰</button>
+            <div class="topbarTitle" id="topbarTitle">Minha rotina</div>
+          </div>
+          <div class="topbarActions" id="topbarActions"></div>
+        </header>
+        <div class="content" id="content"></div>
+      </main>
+    </div>
+    <div id="sidebarOverlay" class="sidebarOverlay" aria-hidden="true"></div>
+    <div id="overlayRoot" class="overlayRoot" aria-hidden="true"></div>
+    <div id="toastRoot" class="toastRoot" aria-live="polite"></div>
+    <script src="app.js?v=11"></script>
+  </body>
+</html>
