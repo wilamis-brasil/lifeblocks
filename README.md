@@ -10,7 +10,7 @@ Projeto pessoal que eu fiz pra treinar front-end e aprender na prática sobre PW
 
 ## ✨ Funcionalidades Principais
 
-- **Minha rotina**
+- **Rotina**
   - Criar hábitos e escolher os dias da semana
   - Marcar como concluído / pular / desfazer
   - Ver um resumo de progresso da semana
