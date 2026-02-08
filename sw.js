@@ -1,8 +1,9 @@
 (() => {
   "use strict";
 
-  const CACHE = "lifeblocks-pwa-v1";
-  const CORE = ["./", "index.html", "styles.css?v=11", "app.js?v=11", "favicon.svg", "manifest.webmanifest"];
+  const CACHE = "lifeblocks-pwa-v8";
+  const CORE = ["./", "index.html", "styles.css?v=17", "app.js?v=15", "favicon.svg", "manifest.webmanifest"];
+  const CORE_URLS = new Set(CORE.map((p) => new URL(p, self.location).toString()));
 
   self.addEventListener("install", (event) => {
     event.waitUntil(
@@ -47,6 +48,8 @@
       );
       return;
     }
+
+    if (!CORE_URLS.has(url.toString())) return;
 
     event.respondWith(
       (async () => {

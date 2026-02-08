@@ -4,10 +4,15 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1" />
     <meta name="color-scheme" content="light" />
+    <meta
+      http-equiv="Content-Security-Policy"
+      content="default-src 'self'; base-uri 'self'; object-src 'none'; script-src 'self'; style-src 'self'; img-src 'self' data:; connect-src 'self'; manifest-src 'self'; worker-src 'self'; upgrade-insecure-requests"
+    />
+    <meta name="referrer" content="no-referrer" />
     <title>LifeBlocks — Foco & Rotina</title>
     <link rel="icon" href="favicon.svg" type="image/svg+xml" />
     <link rel="manifest" href="manifest.webmanifest" />
-    <link rel="stylesheet" href="styles.css?v=11" />
+    <link rel="stylesheet" href="styles.css?v=17" />
     <meta name="theme-color" content="#ffffff" />
     <meta name="application-name" content="LifeBlocks" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -27,6 +32,11 @@
           <button class="navItem" type="button" data-route="pomodoro">Pomodoro</button>
           <button class="navItem" type="button" data-route="kanban">Kanban</button>
         </nav>
+        <div class="sidebarTools">
+          <button class="btn btnGhost btnSmall" id="exportBtn" type="button">Exportar dados</button>
+          <button class="btn btnGhost btnSmall" id="importBtn" type="button">Importar dados</button>
+          <input id="importFile" type="file" accept="application/json" hidden />
+        </div>
       </aside>
       <main class="main" id="main">
         <header class="topbar">
@@ -42,18 +52,6 @@
     <div id="sidebarOverlay" class="sidebarOverlay" aria-hidden="true"></div>
     <div id="overlayRoot" class="overlayRoot" aria-hidden="true"></div>
     <div id="toastRoot" class="toastRoot" aria-live="polite"></div>
-    <script src="app.js?v=11"></script>
+    <script src="app.js?v=15"></script>
   </body>
-</html><!--
-                     ______
-                  .-"      "-.
-                 /            \
-                |              |
-                |,  .-.  .-.  ,|
-           /\   | )(__/  \__)( |
-         _ \/   |/     /\     \|
-        \_\/    (_     ^^     _)   .-==/~\
-       ___/_,__,_\__|IIIIII|__/__)/   /{~}}
-       ---,---,---|-\IIIIII/-|---,\'-' {{~}
-                  \          /     '-==\}/
-      by Wil       `--------`
+</html>

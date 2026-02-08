@@ -32,6 +32,9 @@
     topbarTitle: () => document.getElementById("topbarTitle"),
     topbarActions: () => document.getElementById("topbarActions"),
     menuBtn: () => document.getElementById("menuBtn"),
+    exportBtn: () => document.getElementById("exportBtn"),
+    importBtn: () => document.getElementById("importBtn"),
+    importFile: () => document.getElementById("importFile"),
     sidebarOverlay: () => document.getElementById("sidebarOverlay"),
     content: () => document.getElementById("content"),
     overlayRoot: () => document.getElementById("overlayRoot"),
@@ -61,6 +64,7 @@
     normalizeNavigation();
     bindNavigation();
     bindMobileSidebar();
+    bindImportExport();
     startPomodoroTicker();
     registerServiceWorker();
     bindInstallPrompt();
@@ -162,6 +166,125 @@
       if (e.key !== "Escape") return;
       closeMobileSidebar();
     });
+  }
+
+  function bindImportExport() {
+    const exportBtn = el.exportBtn();
+    const importBtn = el.importBtn();
+    const importFile = el.importFile();
+
+    if (exportBtn) {
+      exportBtn.addEventListener("click", () => {
+        downloadBackup();
+      });
+    }
+
+    if (importBtn && importFile) {
+      importBtn.addEventListener("click", () => {
+        try {
+          importFile.click();
+        } catch {
+          toast("Importar.", "Seu navegador bloqueou o seletor de arquivos.");
+        }
+      });
+      importFile.addEventListener("change", async () => {
+        const file = importFile.files && importFile.files[0];
+        importFile.value = "";
+        if (!file) return;
+        await importBackupFile(file);
+      });
+    }
+  }
+
+  function getLifeBlocksStorageKeys() {
+    const keys = [];
+    try {
+      for (let i = 0; i < localStorage.length; i++) {
+        const k = localStorage.key(i);
+        if (k && k.startsWith("lifeblocks:")) keys.push(k);
+      }
+    } catch {}
+    return keys.sort();
+  }
+
+  function downloadBackup() {
+    const payload = {
+      schema: "lifeblocks-backup",
+      version: 1,
+      exportedAt: new Date().toISOString(),
+      data: Object.fromEntries(getLifeBlocksStorageKeys().map((k) => [k, localStorage.getItem(k)]).filter(([, v]) => typeof v === "string")),
+    };
+    const stamp = payload.exportedAt.replace(/[:.]/g, "-");
+    const name = `lifeblocks-backup-${stamp}.json`;
+    downloadJson(payload, name);
+    toast("Exportado.", "Backup baixado como arquivo .json.");
+  }
+
+  async function importBackupFile(file) {
+    const maxBytes = 2 * 1024 * 1024;
+    if (file && typeof file.size === "number" && file.size > maxBytes) {
+      toast("Importar.", "Arquivo grande demais. Use um backup menor que 2 MB.");
+      return;
+    }
+
+    let json;
+    try {
+      const text = await file.text();
+      json = JSON.parse(text);
+    } catch {
+      toast("Importar.", "Arquivo inválido (não é JSON).");
+      return;
+    }
+
+    const data =
+      json &&
+      typeof json === "object" &&
+      json.schema === "lifeblocks-backup" &&
+      json.version === 1 &&
+      json.data &&
+      typeof json.data === "object" &&
+      !Array.isArray(json.data)
+        ? json.data
+        : null;
+    if (!data) {
+      toast("Importar.", "JSON não parece um backup do LifeBlocks.");
+      return;
+    }
+
+    const entries = Object.entries(data)
+      .filter(([k, v]) => typeof k === "string" && k.startsWith("lifeblocks:") && typeof v === "string")
+      .sort(([a], [b]) => a.localeCompare(b));
+
+    if (!entries.length) {
+      toast("Importar.", "Backup vazio ou incompatível.");
+      return;
+    }
+
+    try {
+      for (const k of getLifeBlocksStorageKeys()) localStorage.removeItem(k);
+      for (const [k, v] of entries) localStorage.setItem(k, v);
+    } catch {
+      toast("Importar.", "Falha ao gravar no armazenamento do navegador.");
+      return;
+    }
+
+    state.store = loadStore();
+    state.pomodoro = loadPomodoro();
+    render();
+    toast("Importado.", "Seus dados foram restaurados neste dispositivo.");
+  }
+
+  function downloadJson(obj, filename) {
+    const text = JSON.stringify(obj, null, 2) + "\n";
+    const blob = new Blob([text], { type: "application/json;charset=utf-8" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = filename;
+    document.body.append(a);
+    a.click();
+    a.remove();
+    URL.revokeObjectURL(url);
   }
 
   function toggleMobileSidebar() {
@@ -909,6 +1032,37 @@
           });
           const box = h("span", { className: "subtaskBox", "aria-hidden": "true" });
           const text = h("span", { className: "subtaskText" }, st.title);
+          text.addEventListener("dblclick", (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+
+            const input = h("input", { className: "subtaskEditInput", value: st.title, autocomplete: "off" });
+            row.replaceChildren(toggle, box, input);
+            toggle.disabled = true;
+
+            const cancel = () => render();
+            const commit = () => {
+              const nextTitle = normalizeTitle(input.value);
+              if (nextTitle && nextTitle !== st.title) renameRoutineSubtask(routine.id, st.id, nextTitle);
+              render();
+            };
+
+            input.addEventListener("keydown", (ev) => {
+              if (ev.key === "Escape") {
+                ev.preventDefault();
+                cancel();
+              } else if (ev.key === "Enter") {
+                ev.preventDefault();
+                commit();
+              }
+            });
+            input.addEventListener("blur", commit);
+
+            input.focus();
+            try {
+              input.select();
+            } catch {}
+          });
           row.append(toggle, box, text);
           list.append(row);
         }
@@ -1055,7 +1209,7 @@
           updatedAt: Date.now(),
         };
 
-    const { modal, closeBtn } = createModalShell(mode === "edit" ? "Editar hábito" : "Novo hábito");
+    const { modal, closeBtn } = createModalShell(mode === "edit" ? "Editar hábito" : "Novo hábito", "modal modalFixed");
 
     const body = h("div", { className: "modalBody" });
 
@@ -1130,7 +1284,6 @@
       }
       upsertRoutine(cleaned);
       closeOverlay();
-      toast("Salvo.", "Esse hábito ficou salvo neste dispositivo.");
       render();
     });
     renderSubtasksEditor();
@@ -1191,6 +1344,30 @@
     if (idx >= 0) next.routines[idx] = routine;
     else next.routines.unshift(routine);
     next.routines.sort((a, b) => (a.createdAt ?? 0) - (b.createdAt ?? 0));
+    state.store = next;
+    saveStore(state.store);
+  }
+
+  function renameRoutineSubtask(routineId, subtaskId, title) {
+    const nextTitle = normalizeTitle(title);
+    if (!nextTitle) return;
+
+    const next = deepClone(state.store);
+    const idx = next.routines.findIndex((r) => r.id === routineId);
+    if (idx < 0) return;
+
+    const routine = next.routines[idx];
+    const subtasks = Array.isArray(routine.subtasks) ? routine.subtasks : [];
+    const stIdx = subtasks.findIndex((st) => st && st.id === subtaskId);
+    if (stIdx < 0) return;
+    if (subtasks[stIdx].title === nextTitle) return;
+
+    const nextRoutine = {
+      ...routine,
+      subtasks: subtasks.map((st, i) => (i === stIdx ? { ...st, title: nextTitle } : st)),
+      updatedAt: Date.now(),
+    };
+    next.routines[idx] = nextRoutine;
     state.store = next;
     saveStore(state.store);
   }
@@ -1673,8 +1850,8 @@
     root.setAttribute("aria-hidden", "true");
   }
 
-  function createModalShell(title) {
-    const modal = h("div", { className: "modal", role: "dialog", "aria-modal": "true" });
+  function createModalShell(title, modalClassName = "modal") {
+    const modal = h("div", { className: modalClassName, role: "dialog", "aria-modal": "true" });
     const header = h("div", { className: "modalHeader" });
     header.append(h("div", { className: "modalTitle" }, title));
     const closeBtn = h("button", { className: "iconBtn", type: "button", "aria-label": "Fechar" }, "×");
@@ -1737,7 +1914,16 @@
         if (k === "className") node.className = String(v);
         else if (k === "style" && v && typeof v === "object") Object.assign(node.style, v);
         else if (k === "value" && "value" in node) node.value = String(v);
-        else if (k.startsWith("aria-") || k.startsWith("data-") || k === "role" || k === "type" || k === "placeholder" || k === "autocomplete") {
+        else if (k === "href" || k === "src") {
+          const raw = String(v);
+          const normalized = raw.replace(/[\u0000-\u001F\u007F\s]+/g, "").toLowerCase();
+          if (normalized.startsWith("javascript:")) continue;
+          if (k === "href" && normalized.startsWith("data:")) continue;
+          if (k === "src" && normalized.startsWith("data:") && !normalized.startsWith("data:image/")) continue;
+          node.setAttribute(k, raw);
+        } else if (k === "innerHTML" || k === "outerHTML" || k === "srcdoc") {
+          continue;
+        } else if (k.startsWith("aria-") || k.startsWith("data-") || k === "role" || k === "type" || k === "placeholder" || k === "autocomplete") {
           node.setAttribute(k, String(v));
         } else {
           node[k] = v;

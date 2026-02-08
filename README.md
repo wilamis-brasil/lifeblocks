@@ -4,13 +4,13 @@
 
 > **Acesse online:** [wilamis-brasil.github.io/lifeblocks](https://wilamis-brasil.github.io/lifeblocks)
 
-Um site para organizar a rotina e desenvolver bons hábitos com consistência, unindo **blocos de rotina**, **Pomodoro (foco/pausa)** e um **Kanban** simples para planejar e acompanhar tarefas do dia. Feito em **HTML/CSS/JavaScript puro**.
+Um app ultra minimalista de **hábitos** + **Pomodoro** (Foco/Pausa) + **Kanban**, feito em **HTML/CSS/JS puro**.
 
 Projeto pessoal que eu fiz pra treinar front-end e aprender na prática sobre PWA, enquanto eu organizo minha rotina.
 
 ## ✨ Funcionalidades Principais
 
-- **Rotina**
+- **Minha rotina**
   - Criar hábitos e escolher os dias da semana
   - Marcar como concluído / pular / desfazer
   - Ver um resumo de progresso da semana

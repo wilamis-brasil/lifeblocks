@@ -55,6 +55,8 @@ body{
 }
 .navItem:hover{background:var(--surface);color:var(--text)}
 .navItem[aria-current="page"]{background:var(--surface2);color:var(--text);font-weight:550}
+.sidebarTools{margin-top:auto;padding-top:12px;display:grid;gap:8px;border-top:1px solid var(--border)}
+.sidebarTools .btn{width:100%}
 
 .topbar{
   height:80px;
@@ -403,6 +405,17 @@ body.isDragging .kbColBody{outline:1px dashed rgba(0,0,0,.12);outline-offset:6px
 .subtaskToggle:checked + .subtaskBox{background:var(--text);border-color:var(--text)}
 .subtaskToggle:checked + .subtaskBox::after{opacity:1}
 .subtaskText{font-size:13px;line-height:1.35;color:rgba(0,0,0,.72)}
+.subtaskEditInput{
+  width:100%;
+  border:1px solid var(--border);
+  border-radius:10px;
+  padding:6px 8px;
+  background:var(--bg);
+  font-size:13px;
+  line-height:1.35;
+}
+.subtaskEditInput:focus{outline:0}
+.subtaskEditInput:focus-visible{box-shadow:var(--ring)}
 .subtaskToggle:checked + .subtaskBox + .subtaskText{color:rgba(0,0,0,.38);text-decoration:line-through}
 
 .check{
@@ -467,12 +480,22 @@ body.isDragging .kbColBody{outline:1px dashed rgba(0,0,0,.12);outline-offset:6px
   pointer-events:auto;
   background:rgba(255,255,255,.82);
   backdrop-filter:blur(10px);
+  overscroll-behavior:contain;
 }
-.modal{width:min(520px,calc(100vw - 28px));border:1px solid var(--border);border-radius:16px;background:var(--bg)}
+.modal{
+  width:min(520px,calc(100vw - 28px));
+  max-height:calc(100vh - 40px);
+  display:flex;
+  flex-direction:column;
+  border:1px solid var(--border);
+  border-radius:16px;
+  background:var(--bg)
+}
+.modalFixed{height:min(520px,calc(100vh - 40px))}
 .modalHeader{padding:12px 14px 8px;display:flex;justify-content:space-between;align-items:center;gap:10px}
 .modalTitle{font-size:14px;font-weight:650}
-.modalBody{padding:0 18px 18px}
-.modalBodySpaced{padding:6px 18px 20px;display:grid;gap:10px}
+.modalBody{padding:0 18px 18px;flex:1 1 auto;overflow:auto}
+.modalBodySpaced{padding:6px 18px 20px;display:grid;gap:10px;flex:1 1 auto;overflow:auto}
 .modalFooter{padding:0 18px 18px;display:flex;justify-content:flex-end;gap:8px}
 
 .toastRoot{position:fixed;bottom:18px;left:18px;right:18px;z-index:60;pointer-events:none;display:grid;gap:10px}
