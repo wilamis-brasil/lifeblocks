@@ -32,19 +32,9 @@ O LifeBlocks é um **PWA**: dá pra instalar como app no desktop/mobile.
 - Quando o navegador permitir, aparece um botão **“Instalar”** no topo.
 - Para funcionar como PWA (service worker/instalação), precisa rodar em **HTTPS** (localhost também funciona claro).
 
-## 🤝 Como Contribuir
-
-Contribuições são super bem-vindas! Se você tem ideias para novos critérios de avaliação ou melhorias na interface:
-
-1.  Faça um **Fork** do projeto.
-2.  Crie uma **Branch** para sua feature (`git checkout -b feature/NovaAnalise`).
-3.  Faça o **Commit** das suas mudanças (`git commit -m 'Add: Verificação de Sponsors'`).
-4.  Faça o **Push** para a Branch (`git push origin feature/NovaAnalise`).
-5.  Abra um **Pull Request**.
-
 ## 📝 Licença
 
-Este projeto está sob a licença MIT. Sinta-se livre para usar, estudar e modificar.
+Este projeto está sob a licença MIT. Então gafanhoto, você é livre para usar, estudar e modificar.
 
 ---
 
